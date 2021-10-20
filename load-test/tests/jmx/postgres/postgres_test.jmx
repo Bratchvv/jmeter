@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Postgres Test Paln" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="Postgresqlpool" enabled="true">
+        <boolProp name="autocommit">true</boolProp>
+        <stringProp name="checkQuery"></stringProp>
+        <stringProp name="connectionAge">500000</stringProp>
+        <stringProp name="connectionProperties"></stringProp>
+        <stringProp name="dataSource">Postgresqlpool</stringProp>
+        <stringProp name="dbUrl">jdbc:postgresql://postgres-db-host:5432/nvpsv_integration?autoReconnect=true;</stringProp>
+        <stringProp name="driver">org.postgresql.Driver</stringProp>
+        <stringProp name="initQuery"></stringProp>
+        <boolProp name="keepAlive">true</boolProp>
+        <stringProp name="password">postgres</stringProp>
+        <stringProp name="poolMax">80</stringProp>
+        <boolProp name="preinit">false</boolProp>
+        <stringProp name="timeout">1000000</stringProp>
+        <stringProp name="transactionIsolation">DEFAULT</stringProp>
+        <stringProp name="trimInterval">600000</stringProp>
+        <stringProp name="username">postgres</stringProp>
+      </JDBCDataSource>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">50</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
+          <stringProp name="dataSource">Postgresqlpool</stringProp>
+          <stringProp name="query">insert into nvpsv_integration.integration_process_data
+        (creation_date, creation_time, data, last_update_time, message_id, name, request_id, id) 
+    values
+        (&apos;${localDate}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;${dataGen}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;,
+		&apos;${needUUID}&apos;, &apos;namname&apos;, &apos;${needUUID}&apos;, &apos;${needUUID}&apos;);	
+		
+
+ insert 
+    into
+        nvpsv_integration.global_process_meta_data
+        (creation_date, creation_time, owner, wsa_action_type, id) 
+    values
+        (&apos;${localDate}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;test&apos;, &apos;test&apos;, &apos;${needUUID}&apos;);
+
+	
+ insert 
+    into
+        nvpsv_integration.application_data
+        (attached_docs, creation_date, creation_time, nsi_type, related_docs, id) 
+    values
+        (&apos;aaaaa&apos;, &apos;${localDate}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, 10, &apos;test&apos;, &apos;${globalCounter}&apos;);
+
+
+		
+ insert 
+    into
+        nvpsv_integration.integration_process
+        (creation_date, creation_time, document_type, documents_data, entity, last_update_time, message_id, pm_name, queue_request, queue_response, receipt, request_id, status, szv_request, type, id) 
+    values
+        (&apos;${localDate}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;qwertyu&apos;, &apos;qwertyu&apos;, &apos;qwertyu&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;${needUUID}&apos;, &apos;qerty&apos;, &apos;qerty&apos;, &apos;qerty&apos;, &apos;qerty&apos;, &apos;${needUUID}&apos;, &apos;qwerty&apos;, &apos;qwerty&apos;, &apos;asdfgh&apos;, &apos;${needUUID}&apos;);
+
+		
+ insert 
+    into
+        nvpsv_integration.step_callback
+        (creation_date, creation_time, error_callback, last_update_time, message_id, step, request_id, response_callback, status, id) 
+    values
+        (&apos;${localDate}&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;12341234&apos;, &apos;2021-10-20 09:34:34.071758+03&apos;, &apos;${needUUID}&apos;, &apos;1341423&apos;, &apos;${needUUID}&apos;, &apos;fasdfasdf&apos;, &apos;123fasf&apos;, &apos;${needUUID}&apos;);
+
+
+
+ select
+        globalproc0_.id as id1_1_,
+        globalproc0_.creation_date as creation2_1_,
+        globalproc0_.creation_time as creation3_1_,
+        globalproc0_.owner as owner4_1_,
+        globalproc0_.wsa_action_type as wsa_acti5_1_ 
+    from
+        nvpsv_integration.global_process_meta_data globalproc0_ 
+    where
+        (
+            globalproc0_.creation_date between &apos;${localDate}&apos; and &apos;${localDate}&apos;
+        ) 
+        and globalproc0_.id=&apos;${needUUID}&apos;;
+		
+
+select
+        globalproc0_.id as id1_1_0_,
+        globalproc0_.creation_date as creation2_1_0_,
+        globalproc0_.creation_time as creation3_1_0_,
+        globalproc0_.owner as owner4_1_0_,
+        globalproc0_.wsa_action_type as wsa_acti5_1_0_ 
+    from
+        nvpsv_integration.global_process_meta_data globalproc0_ 
+    where
+        globalproc0_.id=&apos;${needUUID}&apos;;
+
+select
+        applicatio0_.id as id1_0_0_,
+        applicatio0_.attached_docs as attached2_0_0_,
+        applicatio0_.creation_date as creation3_0_0_,
+        applicatio0_.creation_time as creation4_0_0_,
+        applicatio0_.nsi_type as nsi_type5_0_0_,
+        applicatio0_.related_docs as related_6_0_0_ 
+    from
+        nvpsv_integration.application_data applicatio0_ 
+    where
+        applicatio0_.id=&apos;${globalCounter}&apos;;
+
+
+  select
+        integratio0_.id as id1_5_,
+        integratio0_.creation_date as creation2_5_,
+        integratio0_.creation_time as creation3_5_,
+        integratio0_.document_type as document4_5_,
+        integratio0_.documents_data as document5_5_,
+        integratio0_.entity as entity6_5_,
+        integratio0_.last_update_time as last_upd7_5_,
+        integratio0_.message_id as message_8_5_,
+        integratio0_.pm_name as pm_name9_5_,
+        integratio0_.queue_request as queue_r10_5_,
+        integratio0_.queue_response as queue_r11_5_,
+        integratio0_.receipt as receipt12_5_,
+        integratio0_.request_id as request13_5_,
+        integratio0_.status as status14_5_,
+        integratio0_.szv_request as szv_req15_5_,
+        integratio0_.type as type16_5_ 
+    from
+        nvpsv_integration.integration_process integratio0_ 
+    where
+        (
+            integratio0_.creation_date between &apos;${localDate}&apos; and &apos;${localDate}&apos;
+        ) 
+        and integratio0_.request_id=&apos;${needUUID}&apos; limit 10;
+		
+
+   select
+        stepcallba0_.id as id1_11_,
+        stepcallba0_.creation_date as creation2_11_,
+        stepcallba0_.creation_time as creation3_11_,
+        stepcallba0_.error_callback as error_ca4_11_,
+        stepcallba0_.last_update_time as last_upd5_11_,
+        stepcallba0_.message_id as message_6_11_,
+        stepcallba0_.step as step7_11_,
+        stepcallba0_.request_id as request_8_11_,
+        stepcallba0_.response_callback as response9_11_,
+        stepcallba0_.status as status10_11_ 
+    from
+        nvpsv_integration.step_callback stepcallba0_ 
+    where
+        stepcallba0_.creation_date=&apos;${localDate}&apos; 
+        and stepcallba0_.request_id=&apos;${needUUID}&apos;;
+		
+				
+
+
+</stringProp>
+          <stringProp name="queryArguments"></stringProp>
+          <stringProp name="queryArgumentsTypes"></stringProp>
+          <stringProp name="queryTimeout"></stringProp>
+          <stringProp name="queryType">Update Statement</stringProp>
+          <stringProp name="resultSetHandler">Store as String</stringProp>
+          <stringProp name="resultSetMaxRows"></stringProp>
+          <stringProp name="resultVariable"></stringProp>
+          <stringProp name="variableNames"></stringProp>
+        </JDBCSampler>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">true</boolProp>
+            <stringProp name="script">import java.util.*;
+import java.time.LocalDate;
+
+var uuid = UUID.randomUUID().toString();
+
+vars.put(&quot;needUUID&quot;, uuid);
+var data = &quot;data&quot;.repeat(100);
+vars.put(&quot;dataGen&quot;, data);
+
+var i = Integer.parseInt(props.get(&quot;counter&quot;));
+i++;
+props.put(&quot;counter&quot;, i+&quot;&quot;);
+
+
+
+var j = Integer.parseInt(props.get(&quot;globalCounter&quot;));
+j++;
+props.put(&quot;globalCounter&quot;, j+&quot;&quot;);
+
+if(i &gt; 10000) {
+var day = LocalDate.parse(props.get(&quot;localDate&quot;)).plusDays(1).toString();
+props.put(&quot;localDate&quot;, day);
+props.put(&quot;counter&quot;, &quot;0&quot;);
+}
+log.info(props.get(&quot;localDate&quot;) + &quot; &quot; + props.get(&quot;counter&quot;));
+vars.put(&quot;localDate&quot;, props.get(&quot;localDate&quot;));
+vars.put(&quot;globalCounter&quot;, props.get(&quot;globalCounter&quot;));
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+        <stringProp name="cacheKey">true</stringProp>
+        <stringProp name="filename"></stringProp>
+        <stringProp name="parameters"></stringProp>
+        <stringProp name="script">import java.util.*;
+import java.time.LocalDate;
+
+if(props.get(&quot;counter&quot;) == null ) {
+props.put(&quot;counter&quot;,  &quot;0&quot;);
+props.put(&quot;globalCounter&quot;,  &quot;0&quot;);
+var day = LocalDate.now().toString(); 
+props.put(&quot;localDate&quot;, day);
+}
+
+if(props.get(&quot;globalCounter&quot;) == null ) {
+props.put(&quot;globalCounter&quot;,  &quot;0&quot;);
+}</stringProp>
+        <stringProp name="scriptLanguage">groovy</stringProp>
+      </JSR223PreProcessor>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

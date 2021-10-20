@@ -1,0 +1,4 @@
+- targets:
+  - 1.kafka.nvpsv:7070
+  - 2.kafka.nvpsv:7070
+  - 3.kafka.nvpsv:7070

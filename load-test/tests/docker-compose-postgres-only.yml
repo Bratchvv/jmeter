@@ -1,0 +1,38 @@
+version: '3.4'
+
+networks:
+  postgres-test:  # docker network
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    hostname: postgres-db-host
+    networks:
+      - postgres-test
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nvpsv_integration
+    ports:
+      - "5438:5432"
+    volumes:
+      - ./../postgres/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  postgres-test:
+    image: postgres-test-jmetr:latest
+    hostname: postgres-test-host
+    networks:
+      - postgres-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/postgres/postgres_test.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/postgresql-42.2.20.jar:/opt/apache-jmeter-5.3/lib/ext/postgresql-42.2.20.jar
+      - ./report-kafka:/opt/apache-jmeter-5.3/bin/report/
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl

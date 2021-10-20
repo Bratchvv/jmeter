@@ -1,0 +1,8 @@
+- targets:
+    - 1.db.camunda.nvpsv:9187
+    - 1.db.pm.nvpsv:9187
+    - 1.db.documents.nvpsv:9187
+    - 1.db.payments.nvpsv:9187
+    - 1.db.persons.nvpsv:9187
+    - 1.db.structure.nvpsv:9187 #1.db.references.nvpsv:9187 # один хост
+    - 1.db.integration.nvpsv:9187

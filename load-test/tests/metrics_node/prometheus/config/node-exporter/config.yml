@@ -1,0 +1,21 @@
+- targets:
+    - 1.db.camunda.nvpsv:9100
+    - 1.db.pm.nvpsv:9100
+    - 1.db.documents.nvpsv:9100
+    - 1.db.payments.nvpsv:9100
+    - 1.db.persons.nvpsv:9100
+    - 1.db.structure.nvpsv:9100 #1.db.references.nvpsv:9100 # один хост
+    - 1.db.integration.nvpsv:9100
+    - 1.eureka.nvpsv:9100
+    - 1.api.gateway.nvpsv:9100
+    - 1.documents.oir.nvpsv:9100
+    - 1.payments.oir.nvpsv:9100
+    - 1.persons.oir.nvpsv:9100
+    - 1.structure.oir.nvpsv:9100 #1.references.oir.nvpsv:9100 # один хост
+    - 1.pm.nvpsv:9100
+    - 1.portal.nvpsv:9100
+    - 1.integration.nvpsv:9100
+    - 2.integration.nvpsv:9100
+    - 1.client.ignite.nvpsv:9100
+    - 2.client.ignite.nvpsv:9100
+    - 3.client.ignite.nvpsv:9100

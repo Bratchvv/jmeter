@@ -1,0 +1,82 @@
+version: '3.4'
+
+networks:
+  mq-test:  # docker network
+
+services:
+
+  mq:
+    image: ibmcom/mq
+    hostname: mqhost
+    networks:
+      - mq-test
+    ports:
+      - "9443:9443"
+      - "1414:1414"
+    expose:
+      - "1414"
+    environment:
+      LICENSE: accept
+      MQ_QMGR_NAME: QM1
+    volumes:
+      - ./../mq/20-dev.mqsc:/etc/mqm/20-dev.mqsc
+
+  ibm-mq-producer:
+    image: ibm-mq-producer-jmetr:latest
+    hostname: producerhost
+    networks:
+      - mq-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/ibmmq/IBM_MQ_Producer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/ibmmq/IBM_MQ_Producer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/com.ibm.dhbcore.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.dhbcore.jar
+      - ./../jmeter/ext/com.ibm.mq.allclient-9.0.4.0.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.allclient-9.0.4.0.jar
+      - ./../jmeter/ext/com.ibm.mq.commonservices.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.commonservices.jar
+      - ./../jmeter/ext/com.ibm.mq.headers.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.headers.jar
+      - ./../jmeter/ext/com.ibm.mq.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jar
+      - ./../jmeter/ext/com.ibm.mq.jmqi.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jmqi.jar
+      - ./../jmeter/ext/com.ibm.mq.pcf.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.pcf.jar
+      - ./../jmeter/ext/com.ibm.mqjms.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mqjms.jar
+      - ./../jmeter/ext/fscontext-4.2.jar:/opt/apache-jmeter-5.3/lib/ext/fscontext-4.2.jar
+      - ./../jmeter/ext/javax.jms.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms.jar
+      - ./../jmeter/ext/javax.jms-api-2.0.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms-api-2.0.jar
+      - ./../jmeter/ext/jta-1_1.jar:/opt/apache-jmeter-5.3/lib/ext/jta-1_1.jar
+      - ./../jmeter/ext/providerutil-1.2.1.jar:/opt/apache-jmeter-5.3/lib/ext/providerutil-1.2.1.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+     
+
+  ibm-mq-concumer:
+    image: ibm-mq-concumer-jmetr:latest
+    hostname: consumerhost
+    networks:
+      - mq-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/ibmmq/IBM_MQ_Сonsumer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/ibmmq/IBM_MQ_Сonsumer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/com.ibm.dhbcore.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.dhbcore.jar
+      - ./../jmeter/ext/com.ibm.mq.allclient-9.0.4.0.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.allclient-9.0.4.0.jar
+      - ./../jmeter/ext/com.ibm.mq.commonservices.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.commonservices.jar
+      - ./../jmeter/ext/com.ibm.mq.headers.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.headers.jar
+      - ./../jmeter/ext/com.ibm.mq.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jar
+      - ./../jmeter/ext/com.ibm.mq.jmqi.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jmqi.jar
+      - ./../jmeter/ext/com.ibm.mq.pcf.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.pcf.jar
+      - ./../jmeter/ext/com.ibm.mqjms.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mqjms.jar
+      - ./../jmeter/ext/fscontext-4.2.jar:/opt/apache-jmeter-5.3/lib/ext/fscontext-4.2.jar
+      - ./../jmeter/ext/javax.jms.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms.jar
+      - ./../jmeter/ext/javax.jms-api-2.0.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms-api-2.0.jar
+      - ./../jmeter/ext/jta-1_1.jar:/opt/apache-jmeter-5.3/lib/ext/jta-1_1.jar
+      - ./../jmeter/ext/providerutil-1.2.1.jar:/opt/apache-jmeter-5.3/lib/ext/providerutil-1.2.1.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+

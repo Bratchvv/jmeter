@@ -1,0 +1,203 @@
+version: '3.4'
+
+networks:
+  all-test:  # docker network
+
+services:
+
+  mq:
+    image: ibmcom/mq
+    hostname: mqhost
+    networks:
+      - all-test
+    ports:
+      - "9443:9443"
+      - "1414:1414"
+    expose:
+      - "1414"
+    environment:
+      LICENSE: accept
+      MQ_QMGR_NAME: QM1
+    volumes:
+      - ./../mq/20-dev.mqsc:/etc/mqm/20-dev.mqsc
+
+  ibm-mq-producer:
+    image: ibm-mq-producer-jmetr:latest
+    hostname: producerhost
+    networks:
+      - all-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/ibmmq/IBM_MQ_Producer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/ibmmq/IBM_MQ_Producer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/com.ibm.dhbcore.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.dhbcore.jar
+      - ./../jmeter/ext/com.ibm.mq.allclient-9.0.4.0.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.allclient-9.0.4.0.jar
+      - ./../jmeter/ext/com.ibm.mq.commonservices.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.commonservices.jar
+      - ./../jmeter/ext/com.ibm.mq.headers.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.headers.jar
+      - ./../jmeter/ext/com.ibm.mq.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jar
+      - ./../jmeter/ext/com.ibm.mq.jmqi.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jmqi.jar
+      - ./../jmeter/ext/com.ibm.mq.pcf.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.pcf.jar
+      - ./../jmeter/ext/com.ibm.mqjms.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mqjms.jar
+      - ./../jmeter/ext/fscontext-4.2.jar:/opt/apache-jmeter-5.3/lib/ext/fscontext-4.2.jar
+      - ./../jmeter/ext/javax.jms.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms.jar
+      - ./../jmeter/ext/javax.jms-api-2.0.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms-api-2.0.jar
+      - ./../jmeter/ext/jta-1_1.jar:/opt/apache-jmeter-5.3/lib/ext/jta-1_1.jar
+      - ./../jmeter/ext/providerutil-1.2.1.jar:/opt/apache-jmeter-5.3/lib/ext/providerutil-1.2.1.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+
+
+  ibm-mq-concumer:
+    image: ibm-mq-concumer-jmetr:latest
+    hostname: consumerhost
+    networks:
+      - all-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/ibmmq/IBM_MQ_Сonsumer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/ibmmq/IBM_MQ_Сonsumer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/com.ibm.dhbcore.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.dhbcore.jar
+      - ./../jmeter/ext/com.ibm.mq.allclient-9.0.4.0.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.allclient-9.0.4.0.jar
+      - ./../jmeter/ext/com.ibm.mq.commonservices.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.commonservices.jar
+      - ./../jmeter/ext/com.ibm.mq.headers.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.headers.jar
+      - ./../jmeter/ext/com.ibm.mq.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jar
+      - ./../jmeter/ext/com.ibm.mq.jmqi.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.jmqi.jar
+      - ./../jmeter/ext/com.ibm.mq.pcf.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mq.pcf.jar
+      - ./../jmeter/ext/com.ibm.mqjms.jar:/opt/apache-jmeter-5.3/lib/ext/com.ibm.mqjms.jar
+      - ./../jmeter/ext/fscontext-4.2.jar:/opt/apache-jmeter-5.3/lib/ext/fscontext-4.2.jar
+      - ./../jmeter/ext/javax.jms.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms.jar
+      - ./../jmeter/ext/javax.jms-api-2.0.jar:/opt/apache-jmeter-5.3/lib/ext/javax.jms-api-2.0.jar
+      - ./../jmeter/ext/jta-1_1.jar:/opt/apache-jmeter-5.3/lib/ext/jta-1_1.jar
+      - ./../jmeter/ext/providerutil-1.2.1.jar:/opt/apache-jmeter-5.3/lib/ext/providerutil-1.2.1.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+
+
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: 1.zookeeper.nvpsv
+    networks:
+      - all-test
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 1
+      ZOOKEEPER_SERVERS: 1.zookeeper.nvpsv:2888:3888
+
+
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    hostname: 1.kafka.nvpsv
+    networks:
+      - all-test
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper-1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_COMPRESS_TYPE: 'gzip'
+      #      KAFKA_LOG_DIRS: /kafka/logs
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://1.kafka.nvpsv:9092
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      SESSION_TIMEOUT_MS: 1000
+      MAX_POLL_RECORDS: 500
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      MAX_POLL_INTERVAL_MS: 30000
+      REQUEST_TIMEOUT_MS: 60000
+      KAFKA_LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS: 600
+      KAFKA_LEADER_IMBALANCE_PER_BROKER_PERCENTAGE: 20
+      KAFKA_LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS: 120000
+      KAFKA_LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS: 120000
+      KAFKA_OFFSET_METADATA_MAX_BYTES: 8192
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 157286400
+      KAFKA_MESSAGE_MAX_BYTES: 104857600
+      KAFKA_MAX_MESSAGE_BYTES: 104857600
+      KAFKA_SOCKET_REQUEST_MAX_BYTES: 157286400
+      KAFKA_BUFFER_MEMORY: 157286400
+
+  kafka-producer:
+    image: kafka-producer-jmetr:latest
+    hostname: kafkaproducerhost
+    networks:
+      - all-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/kafka/Kafka_Producer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/kafka/Kafka_Producer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./jmx/kafka/Kafka_Producer.csv:/opt/apache-jmeter-5.3/bin/Kafka_Producer.csv
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+      - ./report-kafka:/opt/apache-jmeter-5.3/bin/report/
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+
+
+  kafka-concumer:
+    image: kafka-concumer-jmetr:latest
+    hostname: kafkaconsumerhost
+    networks:
+      - all-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/kafka/Kafka_Consumer.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./jmx/kafka/Kafka_Consumer.csv:/opt/apache-jmeter-5.3/bin/Kafka_Consumer.csv
+      - ./jmx/kafka/Kafka_Consumer.properties:/opt/apache-jmeter-5.3/bin/user.properties
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/lib/kafka-clients-2.6.0.jar:/opt/apache-jmeter-5.3/lib/kafka-clients-2.6.0.jar
+      - ./report-kafka:/opt/apache-jmeter-5.3/bin/report/
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl
+
+
+  db:
+    image: postgres
+    restart: always
+    hostname: postgres-db-host
+    networks:
+      - all-test
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nvpsv_integration
+    ports:
+      - "5438:5432"
+    volumes:
+      - ./../postgres/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  postgres-test:
+    image: postgres-test-jmetr:latest
+    hostname: postgres-test-host
+    networks:
+      - all-test
+    build:
+      context: ./../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./jmx/postgres/postgres_test.jmx:/opt/apache-jmeter-5.3/bin/test.jmx
+      - ./../jmeter/ext/pepper-box-1.0.jar:/opt/apache-jmeter-5.3/lib/ext/pepper-box-1.0.jar
+      - ./../jmeter/ext/postgresql-42.2.20.jar:/opt/apache-jmeter-5.3/lib/ext/postgresql-42.2.20.jar
+      - ./report-kafka:/opt/apache-jmeter-5.3/bin/report/
+    command: >
+      ./jmeter -n -t test.jmx -l log.jtl

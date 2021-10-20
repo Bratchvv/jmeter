@@ -1,0 +1,57 @@
+version: "3"
+services:
+  volumes-provisioner: # для решения прав доступа к /data прометея
+    image: hasnat/volumes-provisioner:latest
+    environment:
+      PROVISION_DIRECTORIES: "65534:65534:0755:/var/data"
+    volumes:
+      - ./prometheus/data:/var/data
+
+  prometheus:
+    image: prom/prometheus:v2.18.1
+    restart: always
+    volumes:
+      - ./prometheus/config:/etc/prometheus/config
+      - /etc/hosts:/etc/hosts
+      - ./prometheus/data:/prometheus/data
+    depends_on:
+      - volumes-provisioner
+    command:
+      - '--config.file=/etc/prometheus/config/prometheus.yml'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.size=1TB' #1 TB хранилище
+      - '--storage.tsdb.retention.time=30d' #храним 30 дней
+    ports:
+      - 9090:9090
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.16.0
+    restart: always
+    ports:
+      - 9115:9115
+
+  grafana:
+    image: grafana/grafana:7.0.3
+    restart: always
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - /etc/hosts:/etc/hosts
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-Qwerty123*}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - 3000:3000
+      
+  kafka_minion:
+    image: solsson/kafka-consumers-prometheus:latest
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/hosts:/etc/hosts
+    ports:
+      - 9380:9380
+    environment:
+      TELEMETRY_PORT: 9380
+      KAFKA_BROKERS: "1.kafka.nvpsv:9092,2.kafka.nvpsv:9092,3.kafka.nvpsv:9092"
+

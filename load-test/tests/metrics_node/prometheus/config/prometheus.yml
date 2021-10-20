@@ -1,0 +1,104 @@
+global:
+  scrape_interval: 5s
+  scrape_timeout: 5s
+  evaluation_interval: 5s
+scrape_configs:
+  - job_name: prometheus
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - localhost:9090
+  - job_name: 'postgres'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/postgres/*.yml
+        refresh_interval: 1m
+  - job_name: 'node-exporter'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/node-exporter/*.yml
+        refresh_interval: 1m
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: nodename
+  - job_name: 'ignite'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/ignite/*.yml
+        refresh_interval: 1m
+  - job_name: 'kafka-minion'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/kafka-minion/*.yml
+  - job_name: 'kafka-jmx'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/kafka-jmx/*.yml
+  - job_name: 'zookeeper-jmx'
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/config/zookeeper-jmx/*.yml
+  - job_name: 'eureka'
+    scrape_interval: 20s
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+    consul_sd_configs:
+      - server: 1.eureka.nvpsv:8761
+        tag_separator: ','
+        allow_stale: true
+        refresh_interval: 30s
+        services: []
+    relabel_configs:
+    - source_labels: [__meta_consul_service]
+      separator: ;
+      regex: (.*)
+      target_label: application
+      replacement: ${1}
+      action: replace
+    - source_labels: [__meta_consul_metadata_metrics_path]
+      separator: ;
+      regex: (.*)
+      target_label: __metrics_path__
+      replacement: ${1}
+      action: replace
+    - source_labels: [__address__]
+      separator: ;
+      regex: (.*)
+      target_label: instance
+      replacement: ${1}
+      action: replace
+
+  - job_name: blackbox-via-service-discovery
+    params:
+      module:
+        - http_2xx
+    scrape_interval: 15s
+    scrape_timeout: 15s
+    metrics_path: /probe
+    consul_sd_configs:
+      - server: 1.eureka.nvpsv:8761
+        tag_separator: ','
+        allow_stale: true
+        refresh_interval: 30s
+        services: []
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        target_label: application
+      - source_labels: [__address__, __meta_consul_metadata_health_path]
+        separator: ;
+        regex: (.*);(.*)
+        target_label: __param_target
+        replacement: http://${1}${2}
+        action: replace
+      - source_labels: [__address__]
+        separator: ;
+        regex: (.*)
+        target_label: instance
+        replacement: ${1}
+        action: replace
+      - separator: ;
+        regex: (.*)
+        target_label: __address__
+        replacement: blackbox-exporter:9115
+        action: replace
+# https://github.com/barrycommins/prometheus-eureka-spring-boot-demo/blob/master/prometheus-config/prometheus.yml

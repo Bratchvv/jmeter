@@ -1,0 +1,16 @@
+# Use for run on localhost standalone.
+version: '2'
+
+services:
+  mq:
+    image: ibmcom/mq
+    ports:
+      - "9443:9443"
+      - "1414:1414"
+    expose:
+      - "1414"
+    environment:
+      LICENSE: accept
+      MQ_QMGR_NAME: QM1
+    volumes:
+      - ./20-dev.mqsc:/etc/mqm/20-dev.mqsc
